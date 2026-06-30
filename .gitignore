@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual Environment
+venv/
+env/
+
+# Environment variables
+.env
+
+# Generated vector database
+vectorstore/
+
+# Original legal knowledge base
+data/legal_knowledge_base.txt
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

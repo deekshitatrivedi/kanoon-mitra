@@ -1,0 +1,7 @@
+# Sample Legal Knowledge Base
+
+This is only a sample file.
+
+Replace it with your own legal documents before running:
+
+python src/ingest.py
