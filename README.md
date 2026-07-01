@@ -9,6 +9,18 @@ Kanoon Mitra ("Friend of the Law") is a Retrieval-Augmented Generation (RAG) cha
 ## Demo
 
 ![Kanoon Mitra Screenshot](https://via.placeholder.com/800x450.png?text=Add+your+screenshot+here)
+## 📸 Screenshots
+
+### Home Page
+
+![Home Page](screenshots/home.png)
+
+
+### Generated Response
+
+![Response](screenshots/1.png)
+[Response](screenshots/2.png)
+[Response](screenshots/3.png)
 
 ---
 

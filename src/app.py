@@ -1,6 +1,5 @@
 """
 app.py — Kanoon Mitra: Indian Legal Rights Chatbot
-Run: streamlit run kanoon-mitra\src\app.py
 """
 import os, sys
 from pathlib import Path
