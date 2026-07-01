@@ -1,10 +1,17 @@
 """
 app.py — Kanoon Mitra: Indian Legal Rights Chatbot
 """
-import os, sys
+import os, re, sys
 from pathlib import Path
 import streamlit as st
 from dotenv import load_dotenv
+
+# ── Page config MUST be the very first Streamlit command in the app ─
+st.set_page_config(
+    page_title="Kanoon Mitra — Indian Legal Rights",
+    page_icon="⚖️",
+    layout="wide",
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR / "src"))
@@ -12,12 +19,70 @@ load_dotenv(BASE_DIR / ".env")
 
 from rag_chain import KanoonMitraChain
 
-# ── Page config ────────────────────────────────────────────────────
-st.set_page_config(
-    page_title="Kanoon Mitra — Indian Legal Rights",
-    page_icon="⚖️",
-    layout="wide",
-)
+# ── Topic documents (Covered Topics -> full section text) ──────────
+# Looks for legal_knowledge_base.txt in a few likely locations so this
+# works regardless of exactly where it lives in your project. Adjust
+# KB_CANDIDATES if your file lives somewhere else.
+KB_CANDIDATES = [
+    BASE_DIR / "data" / "legal_knowledge_base.txt",
+    BASE_DIR / "legal_knowledge_base.txt",
+    BASE_DIR / "src" / "legal_knowledge_base.txt",
+    BASE_DIR / "knowledge_base" / "legal_knowledge_base.txt",
+]
+KB_PATH = next((p for p in KB_CANDIDATES if p.exists()), KB_CANDIDATES[0])
+
+# Order here MUST match SECTION 1, SECTION 2, ... in legal_knowledge_base.txt
+TOPICS = [
+    (1, "🏛️", "Fundamental Rights"),
+    (2, "🚔", "Arrest Rights"),
+    (3, "🏠", "Tenant Rights"),
+    (4, "🛒", "Consumer Rights"),
+    (5, "📋", "RTI"),
+    (6, "👩", "Women's Rights"),
+    (7, "💼", "Labour Rights"),
+    (8, "🏗️", "RERA / Property"),
+    (9, "💻", "Cyber Crime"),
+    (10, "⚖️", "Free Legal Aid"),
+]
+
+@st.cache_data(show_spinner=False)
+def load_topic_sections(path: str):
+    """Parse legal_knowledge_base.txt into {section_number: {title, content}}."""
+    try:
+        text = Path(path).read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return {}
+    pattern = r"={10,}\s*\nSECTION (\d+):\s*(.+?)\s*\n={10,}\s*\n(.*?)(?=\n={10,}\s*\nSECTION|\Z)"
+    sections = {}
+    for num, title, content in re.findall(pattern, text, re.DOTALL):
+        sections[int(num)] = {"title": title.strip(), "content": content.strip()}
+    return sections
+
+KB_SECTIONS = load_topic_sections(str(KB_PATH))
+
+
+def _render_topic_body(section_num: int):
+    section = KB_SECTIONS.get(section_num)
+    if not section:
+        st.error(
+            f"Couldn't find this topic's document. Checked: `{KB_PATH}`. "
+            "Make sure legal_knowledge_base.txt is at that path, or update "
+            "KB_CANDIDATES in app.py."
+        )
+        return
+    st.markdown(f"## {section['title']}")
+    st.markdown(section["content"])
+
+
+if hasattr(st, "dialog"):
+    @st.dialog("📄 Legal Topic", width="large")
+    def show_topic_dialog(section_num: int):
+        _render_topic_body(section_num)
+        if st.button("Close"):
+            st.session_state.selected_topic = None
+            st.rerun()
+else:
+    show_topic_dialog = None  # older Streamlit: falls back to inline expander
 
 st.markdown("""
 <style>
@@ -42,9 +107,15 @@ div[data-testid="stChatMessage"] { border-radius:12px; }
 """, unsafe_allow_html=True)
 
 # ── Session state ──────────────────────────────────────────────────
-for key, val in [("messages",[]),("chain",None),("show_src",False)]:
+for key, val in [("messages",[]),("chain",None),("show_src",False),("selected_topic",None)]:
     if key not in st.session_state:
         st.session_state[key] = val
+
+# Open the topic document modal if a topic was just clicked
+if st.session_state.selected_topic is not None:
+    if show_topic_dialog is not None:
+        show_topic_dialog(st.session_state.selected_topic)
+    # else: handled inline in the sidebar below (older Streamlit fallback)
 
 # ── Sidebar ────────────────────────────────────────────────────────
 with st.sidebar:
@@ -56,10 +127,18 @@ with st.sidebar:
     
 
     st.markdown("### Topics covered")
-    for t in ["🏛️ Fundamental Rights","🚔 Arrest Rights","🏠 Tenant Rights",
-              "🛒 Consumer Rights","📋 RTI","👩 Women's Rights",
-              "💼 Labour Rights","🏗️ RERA / Property","💻 Cyber Crime","⚖️ Free Legal Aid"]:
-        st.markdown(f"- {t}")
+    st.caption("Click a topic to open its full legal document")
+    for num, icon, label in TOPICS:
+        if st.button(f"{icon} {label}", key=f"topic_{num}", use_container_width=True):
+            st.session_state.selected_topic = num
+            st.rerun()
+        # Fallback for Streamlit versions without st.dialog: show inline
+        if show_topic_dialog is None and st.session_state.selected_topic == num:
+            with st.expander(f"{icon} {label} — full document", expanded=True):
+                _render_topic_body(num)
+                if st.button("Close", key=f"close_{num}"):
+                    st.session_state.selected_topic = None
+                    st.rerun()
 
     st.divider()
     st.markdown("### Helplines")
