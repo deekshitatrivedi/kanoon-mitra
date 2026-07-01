@@ -41,11 +41,10 @@ Kanoon Mitra ("Friend of the Law") is a Retrieval-Augmented Generation (RAG) cha
 ## Features
 
 - **RAG-powered** — Answers are grounded in a curated knowledge base of Indian laws (IPC, CrPC, Constitution, Consumer Protection Act, RTI Act, Labour Laws, Domestic Violence Act, RERA, IT Act)
-- **No hallucinations** — LLM can only answer from retrieved context; if it doesn't know, it says so
 - **Plain language** — Complex legal text explained in simple, empathetic language
 - **Quick question buttons** — One-click access to 8 most common legal situations
 - **Source transparency** — Toggle to see which law chunks were used to generate each answer
-- **Free legal aid links** — Every response ends with an actionable next step; sidebar has all helpline numbers
+- **Free legal aid links** —  sidebar has all helpline numbers
 - **Browse Legal Topics** — Users can select a legal topic such as Consumer Rights, Employment Law, or Cyber Crime to view curated legal information without needing to type a query.
 
 
