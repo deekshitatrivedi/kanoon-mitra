@@ -46,7 +46,8 @@ Kanoon Mitra ("Friend of the Law") is a Retrieval-Augmented Generation (RAG) cha
 - **Quick question buttons** — One-click access to 8 most common legal situations
 - **Source transparency** — Toggle to see which law chunks were used to generate each answer
 - **Free legal aid links** — Every response ends with an actionable next step; sidebar has all helpline numbers
-- **Fully offline** - TF-IDF retrieval using Scikit-learn
+- **Browse Legal Topics** — Users can select a legal topic such as Consumer Rights, Employment Law, or Cyber Crime to view curated legal information without needing to type a query.
+
 
 ---
 
@@ -88,84 +89,135 @@ kanoon-mitra/
 
 ---
 
-## Setup Instructions
-1. Clone the Repository
+# 🚀 Setup Instructions
 
+## 1. Clone the Repository
+
+```bash
 git clone https://github.com/yourusername/kanoon-mitra.git
 cd kanoon-mitra
+```
 
-2. Create a Virtual Environment
+---
 
-Windows
-    python -m venv venv
-    venv\Scripts\activate
+## 2. Create a Virtual Environment
 
-macOS/Linux
-    python3 -m venv venv
-    source venv/bin/activate
+### Windows
 
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
 
-3. Install Dependencies
+### macOS/Linux
 
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+---
+
+## 3. Install Dependencies
+
+```bash
 pip install -r requirements.txt
+```
 
-4. Configure Environment Variables
+---
 
-Create a .env file in the project root.
+## 4. Configure Environment Variables
+
+Create a `.env` file in the project root.
 
 Example:
-    GROQ_API_KEY=your_groq_api_key_here
 
-Alternatively, copy the example file:
+```env
+GROQ_API_KEY=your_groq_api_key_here
+```
 
-    Windows
-        .env.example .env
-    macOS/Linux
-        nv.example .env
+Alternatively, copy the example file.
 
-Then open the .env file and replace the placeholder with your Groq API key.
+### Windows
 
-5. Prepare the Knowledge Base
+```bash
+copy .env.example .env
+```
 
-Add your legal documents to the data/ folder.
+### macOS/Linux
 
-Supported formats:
+```bash
+cp .env.example .env
+```
 
-.txt
-.pdf
+Open the newly created `.env` file and replace the placeholder with your **Groq API Key**.
 
-**Note**: This repository includes only a sample knowledge base. Replace it or add your own legal documents before building the vector store.
+---
 
-6. Generate the Vector Store
+## 5. Prepare the Knowledge Base
+
+Place your legal documents inside the `data/` directory.
+
+**Supported formats**
+
+- `.txt`
+- `.pdf`
+
+> **Note:** This repository includes only a sample knowledge base. Replace it or add your own legal documents before generating the vector store.
+
+---
+
+## 6. Generate the Vector Store
 
 Run the ingestion script to create the searchable TF-IDF index.
-    python src/ingest.py
 
-This generates the following files inside the vectorstore/ directory:
-    chunks.json
-    vectors.npy
-    tfidf_vectorizer.pkl
+```bash
+python src/ingest.py
+```
 
-7. Launch the Application
+This generates the following files inside the `vectorstore/` directory:
+
+```
+vectorstore/
+├── chunks.json
+├── vectors.npy
+└── tfidf_vectorizer.pkl
+```
+
+---
+
+## 7. Launch the Application
 
 Start the Streamlit application.
-    streamlit run src/app.py
 
-8. Open the Application
+```bash
+streamlit run src/app.py
+```
+
+---
+
+## 8. Open the Application
 
 Once the server starts, open your browser and visit:
 
+```
 http://localhost:8501
+```
 
-You can now ask questions about Indian legal rights through the chatbot interface.
+You can now ask questions about Indian legal rights through the chatbot interface and browse legal topics.
 
-**Notes**
+---
 
-Ensure that your Groq API key is correctly added to the .env file.
-Whenever you modify or add documents in the data/ folder, rerun the ingestion script:
-**python src/ingest.py**
+# 📝 Notes
 
-to regenerate the vector store before launching the application.
+- Ensure that your **Groq API Key** is correctly added to the `.env` file.
+- Whenever you modify or add documents in the `data/` folder, regenerate the vector store by running:
+
+```bash
+python src/ingest.py
+```
+
+before launching the application again.
 
 ---
 
